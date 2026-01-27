@@ -1,18 +1,19 @@
+
 version: '3.8'
 services:
-	oracle-xe112:
-		build:
-			context: ./docker/oracle
-		container_name: oracle-xe112
-		ports:
-			- "1521:1521"
-			- "8080:8080"
-		volumes:
-			- oracle-data:/u01
-		environment:
-			ORACLE_PWD: "oracle"
-		restart: unless-stopped
+  oracle-xe112:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: oracle-xe112
+    ports:
+      - "1521:1521"
+      - "3002:8080"
+    volumes:
+      - oracle-data:/u01
+    environment:
+      ORACLE_PWD: "oracle"
+    restart: unless-stopped
 
 volumes:
-	oracle-data:
-
+  oracle-data:
