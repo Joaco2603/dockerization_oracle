@@ -1,30 +1,26 @@
 FROM oraclelinux:7-slim
 
 ARG ORACLE_PWD=oracle
-ENV ORACLE_HOME=/u01/app/oracle/product/11.2.0/xe \
+ENV ORACLE_BASE=/opt/oracle \
+    ORACLE_HOME=/opt/oracle/product/21c/dbhomeXE \
     ORACLE_SID=XE \
     ORACLE_PWD=${ORACLE_PWD} \
-    PATH=$PATH:/u01/app/oracle/product/11.2.0/xe/bin
+    PATH=$PATH:/opt/oracle/product/21c/dbhomeXE/bin
 
 COPY install /install
 COPY scripts/entrypoint.sh /entrypoint.sh
 
-# Instalar todas las dependencias necesarias
-RUN yum -y install unzip libaio bc net-tools procps && \
-    if [ ! -f /install/OracleXE112_RPM.zip ]; then \
-      echo "ERROR: coloca OracleXE112_RPM.zip en install/" && exit 1; \
+# Convertir finales de línea a Unix (LF) y dar permisos
+RUN sed -i 's/\r$//' /entrypoint.sh && chmod +x /entrypoint.sh
+
+# Instalar dependencias necesarias e instalar Oracle XE 21c
+RUN yum -y install libaio bc net-tools procps openssl && \
+    if [ ! -f /install/oracle-database-xe-21c-1.0-1.ol7.x86_64.rpm ]; then \
+      echo "ERROR: coloca oracle-database-xe-21c-1.0-1.ol7.x86_64.rpm en install/" && exit 1; \
     fi && \
-    echo "Descomprimiendo Oracle XE..." && \
-    unzip /install/OracleXE112_RPM.zip -d /install && \
-    echo "Buscando archivos .rpm en /install..." && \
-    rpm_files=$(find /install -type f -iname "*.rpm" -print) && \
-    if [ -z "$rpm_files" ]; then \
-      echo "ERROR: no se encontraron archivos .rpm" && exit 1; \
-    fi && \
-    echo "Instalando Oracle XE RPM..." && \
-    yum -y localinstall $rpm_files && \
+    echo "Instalando Oracle XE 21c RPM..." && \
+    yum -y localinstall /install/oracle-database-xe-21c-1.0-1.ol7.x86_64.rpm && \
     rm -rf /install/* && \
-    yum -y remove unzip && \
     yum clean all
 
 # Crear directorios necesarios
