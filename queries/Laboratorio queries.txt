@@ -1,0 +1,215 @@
+
+
+Ejercicio 1
+Encontrar empleados donde el salario multiplicado por el IDEmp dividido entre 1000 es mayor a medio millón de colones y su apellido NO termina en vocal.
+
+SELECT * 
+FROM EMPLEADOS
+WHERE (SALARIO*IDEmp)/1000 > 500000
+AND APELLIDO NOT LIKE '%A'
+AND APELLIDO NOT LIKE '%E'
+AND APELLIDO NOT LIKE '%I'
+AND APELLIDO NOT LIKE '%O'
+AND APELLIDO NOT LIKE '%U'
+ORDER BY SALARIO DESC;
+
+Ejercicio 2
+Del resultado anterior, encontrar empleados donde el salario al cuadrado dividido entre 1,000,000 es mayor a 2,500, ordenar el salario de mayor a menor.
+
+SELECT * 
+FROM EMPLEADOS
+WHERE (SALARIO*IDEmp)/1000 > 500000
+AND SALARIO*SALARIO/1000000 > 2500
+AND APELLIDO NOT LIKE '%A'
+AND APELLIDO NOT LIKE '%E'
+AND APELLIDO NOT LIKE '%I'
+AND APELLIDO NOT LIKE '%O'
+AND APELLIDO NOT LIKE '%U'
+ORDER BY SALARIO DESC;
+
+Ejercicio 3
+Encontrar empleados donde la diferencia entre el salario y (IDemp × 1000) multiplicada por 0.3 es mayor a 300,000. Ordenar por la columna que muestra la diferencia y listar únicamente el top 5.
+
+SELECT *
+FROM (
+    SELECT
+    NOMBRE,
+    (SALARIO - (IDEmp * 1000)) * 0.3 AS DIFERENCIA
+    FROM EMPLEADOS
+)
+WHERE DIFERENCIA > 300000
+AND (ROWNUM <> 6)
+ORDER BY diferencia DESC;
+
+
+Ejercicio 4
+Encontrar empleados donde el cociente entre salario y (IDemp + 100) multiplicado por 50 es mayor a 60,000, y si y solo si, su nombre y apellido empiezan con la letra "A". Ordenar de mayor a menor por el número de columna donde se refleja su pago mensual.
+
+SELECT *
+FROM EMPLEADOS
+WHERE SALARIO/(IDEmp+100)*50 > 60000
+AND NOMBRE LIKE 'A%'
+AND APELLIDO LIKE 'A%'
+ORDER BY 3 DESC;
+
+Ejercicio 5
+Del resultado anterior, encontrar empleados donde el producto de salario por 0.25 dividido entre (IDemp / 10) es mayor a 10,000, y el salario está 
+entre X = 7.5 × 10^5 o Z = 1,500,000 / 2, y si y solo si X = 95 × (100 × 100). Ordenar por el identificador del empleado.
+
+SELECT *
+FROM EMPLEADOS
+WHERE SALARIO/(IDEmp+100)*50 > 60000
+AND NOMBRE LIKE 'A%'
+AND APELLIDO LIKE 'A%'
+AND SALARIO*0.25/(IDEmp/10) > 10000
+AND SALARIO = 750000
+AND SALARIO = 95*(100*100)
+ORDER BY SALARIO DESC;
+
+Ejercicio 6
+Encontrar empleados donde (salario × 2 − IDemp × 800) dividido entre 3 es mayor a 900,000. El resultado NO debe incluir a ningún empleado de Presidencia, 
+adicionalmente el nombre debe terminar con la letra 'L' o el apellido terminar con la letra 'S'.
+
+SELECT *
+FROM PUESTOS;
+
+SELECT IDPUESTO
+FROM EMPLEADOS
+WHERE IDPUESTO = 'A01';
+
+SELECT *
+FROM EMPLEADOS
+WHERE (SALARIO*2-IDEmp*800)/3 > 900000
+AND IDPUESTO <> 'A01'
+AND (NOMBRE LIKE '%L' OR APELLIDO LIKE '%S');
+
+Ejercicio 7
+Averiguar el nombre, pago del salario mensual, quincenal, semanal, diario, por hora y por minuto, pero 
+para todos aquellos empleados que en su nombre tengan una combinación de dos vocales distintas juntas, además,
+si y solo si, para aquellos empleados que NO trabajan para los departamentos que inicien con las siguientes 
+letras: F, C, P, ni que terminen con la letra: S. Ordenar de manera descendente por la columna que despliega la información del pago por minuto del empleado.
+
+SELECT 
+    NOMBRE, 
+    SALARIO AS "SALARIO MENSUAL", 
+    SALARIO/2 AS "SALARIO QUINCENAL", 
+    SALARIO/4 AS "SALARIO SEMANAL", 
+    SALARIO/30 AS "SALARIO DIARIO", 
+    (SALARIO/30)/8 AS "SALARIO POR HORA", 
+    (SALARIO/30)/8/60 AS "SALARIO POR MINUTO"
+FROM EMPLEADOS
+WHERE (
+    (NOMBRE LIKE '%A%' AND (NOMBRE LIKE '%E%' OR NOMBRE LIKE '%I%' OR NOMBRE LIKE '%O%' OR NOMBRE LIKE '%U%')) OR
+    (NOMBRE LIKE '%E%' AND (NOMBRE LIKE '%I%' OR NOMBRE LIKE '%O%' OR NOMBRE LIKE '%U%')) OR
+    (NOMBRE LIKE '%I%' AND (NOMBRE LIKE '%O%' OR NOMBRE LIKE '%U%')) OR
+    (NOMBRE LIKE '%O%' AND (NOMBRE LIKE '%U%'))
+)
+OR (
+    (NOMBRE LIKE 'A%' AND (NOMBRE LIKE '%E' OR NOMBRE LIKE '%I' OR NOMBRE LIKE '%O' OR NOMBRE LIKE '%U')) OR
+    (NOMBRE LIKE 'E%' AND (NOMBRE LIKE '%I' OR NOMBRE LIKE '%O' OR NOMBRE LIKE '%U')) OR
+    (NOMBRE LIKE 'I%' AND (NOMBRE LIKE '%O' OR NOMBRE LIKE '%U')) OR
+    (NOMBRE LIKE 'O%' AND (NOMBRE LIKE '%U')) 
+)
+AND (
+    IDDEP NOT LIKE 'F%'
+    AND IDDEP NOT LIKE 'C%' -- Changed OR to AND (See note below)
+    AND IDDEP NOT LIKE 'P%' 
+    AND IDDEP NOT LIKE '%S'
+)
+ORDER BY "SALARIO POR MINUTO" DESC;
+
+
+SELECT 
+    NOMBRE, 
+    SALARIO AS "SALARIO MENSUAL", 
+    SALARIO/2 AS "SALARIO QUINCENAL", 
+    SALARIO/4 AS "SALARIO SEMANAL", 
+    SALARIO/30 AS "SALARIO DIARIO", 
+    (SALARIO/30)/8 AS "SALARIO POR HORA", 
+    (SALARIO/30)/8/60 AS "SALARIO POR MINUTO"
+FROM EMPLEADOS
+WHERE 
+    (
+        nombre LIKE '%ae%' OR nombre LIKE '%ai%' OR nombre LIKE '%ao%' OR nombre LIKE '%au%' OR
+        nombre LIKE '%ea%' OR nombre LIKE '%ei%' OR nombre LIKE '%eo%' OR nombre LIKE '%eu%' OR
+        nombre LIKE '%ia%' OR nombre LIKE '%ie%' OR nombre LIKE '%io%' OR nombre LIKE '%iu%' OR
+        nombre LIKE '%oa%' OR nombre LIKE '%oe%' OR nombre LIKE '%oi%' OR nombre LIKE '%ou%' OR
+        nombre LIKE '%ua%' OR nombre LIKE '%ue%' OR nombre LIKE '%ui%' OR nombre LIKE '%uo%'
+    )
+    -- 2. Filtros de Departamento
+    AND departamento NOT LIKE 'F%'
+    AND departamento NOT LIKE 'C%'
+    AND departamento NOT LIKE 'P%'
+    AND departamento NOT LIKE '%S'
+ORDER BY "SALARIO POR MINUTO" DESC;
+
+Ejercicio 8
+Usar la fórmula de la Expansión Universal Gravitatoria. Identificar empleados con salarios desproporcionados usando fórmula:
+
+
+Ω = (Salario × Departamento) / 10 millones
+
+
+Mostrar solo casos donde se cumple que Ω > 1.5 como "Colapso Gravitatorio". Esto únicamente para los empleados que nacieron en los 90's y entraron a trabajar en la década del 2010. 
+
+Ordenar por el valor de la columna Ω de manera que el valor mayor vaya primero. El resultado debe ser 16 filas únicamente. 
+
+No usar ROWNUM.
+
+SELECT (SALARIO*IDDEP)/10000000 as "COLAPSO GRAVITATORIO"
+FROM EMPLEADOS
+WHERE ((SALARIO*IDDEP)/10000000) > 1.5
+AND DIANACIMIENTO BETWEEN TO_DATE('1990-01-01', 'YYYY-MM-DD') AND TO_DATE('1999-12-31', 'YYYY-MM-DD')
+AND DIAINGRESO BETWEEN TO_DATE('2010-01-01', 'YYYY-MM-DD') AND TO_DATE('2019-12-31', 'YYYY-MM-DD')
+ORDER BY "COLAPSO GRAVITATORIO" DESC
+FETCH FIRST 16 ROWS ONLY;
+
+Ejercicio 9
+Generar un reporte con los empleados que tienen el Aguinaldo más alto, pero todos aquellos que nacieron en los 60's hasta la fecha de la tragedia (9/11). Deben dar el reporte de los 10 aguinaldos más altos según la condición anterior. Ordenar desde el más adulto al más joven.
+
+SELECT DIAINGRESO (
+SELECT NOMBRE, DIANACIMIENTO, DIAINGRESO, SALARIO
+FROM EMPLEADOS
+WHERE DIANACIMIENTO BETWEEN TO_DATE('1960-01-01', 'YYYY-MM-DD') AND TO_DATE('2001-09-11', 'YYYY-MM-DD')
+)WHERE mes es 11 o 12 y el annio es menor que 2025 utilizar mes 01 de enero
+AND mes es 11 o 12 y el annio es mayor a 2025 multiplicar por 0
+AND mes es 02 o alguno en medio y el annio es menor a 2025 o 2025 multiplicar del mes de partida al mes 10;
+
+SELECT 
+    NOMBRE, 
+    TO_CHAR(DIAINGRESO, 'DD/MM/YYYY') AS FECHA_COMPLETA,
+    SALARIO,
+    CASE 
+        WHEN EXTRACT(YEAR FROM DIAINGRESO) < 2025 
+             THEN 12
+        WHEN EXTRACT(MONTH FROM DIAINGRESO) IN (11, 12) AND EXTRACT(YEAR FROM DIAINGRESO) > 2025 
+             THEN 0
+        WHEN EXTRACT(MONTH FROM DIAINGRESO) BETWEEN 1 AND 10 AND EXTRACT(YEAR FROM DIAINGRESO) = 2025 
+             THEN (12 - (EXTRACT(MONTH FROM DIAINGRESO)-1))
+        ELSE 0
+    END * SALARIO/12 AS RESULTADO_CALCULO
+FROM (
+    SELECT NOMBRE, DIANACIMIENTO, DIAINGRESO, SALARIO
+    FROM EMPLEADOS
+    WHERE DIANACIMIENTO BETWEEN TO_DATE('1960-01-01', 'YYYY-MM-DD') AND TO_DATE('2001-09-11', 'YYYY-MM-DD')
+)
+ORDER BY 4 DESC, DIANACIMIENTO ASC
+FETCH FIRST 10 ROWS ONLY;
+
+SELECT SALARIO*12/12 as AGUINALDO
+FROM (
+    SELECT NOMBRE, DIANACIMIENTO, DIAINGRESO, SALARIO
+    FROM EMPLEADOS
+    WHERE DIANACIMIENTO BETWEEN TO_DATE('1960-01-01', 'YYYY-MM-DD') AND TO_DATE('2001-09-11', 'YYYY-MM-DD')
+)
+ORDER BY 4 DESC, DIANACIMIENTO ASC
+FETCH FIRST 10 ROWS ONLY;
+
+Ejercicio 10
+Generar el último reporte con los 5 empleados con la hora de pago más baja, esto para los empleados que ingresaron a planilla en la década del 2010 a la fecha.
+
+SELECT *
+FROM EMPLEADOS
+WHERE DIAINGRESO >= TO_DATE('2010-01-01', 'YYYY-MM-DD')
+ORDER BY SALARIO ASC
+FETCH FIRST 5 ROWS ONLY;
