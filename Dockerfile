@@ -1,4 +1,4 @@
-FROM oraclelinux:7-slim
+FROM oraclelinux:8-slim
 
 ARG ORACLE_PWD=oracle
 ENV ORACLE_BASE=/opt/oracle \
@@ -14,14 +14,15 @@ COPY scripts/entrypoint.sh /entrypoint.sh
 RUN sed -i 's/\r$//' /entrypoint.sh && chmod +x /entrypoint.sh
 
 # Instalar dependencias necesarias e instalar Oracle XE 21c
-RUN yum -y install libaio bc net-tools procps openssl && \
-    if [ ! -f /install/oracle-database-xe-21c-1.0-1.ol7.x86_64.rpm ]; then \
-      echo "ERROR: coloca oracle-database-xe-21c-1.0-1.ol7.x86_64.rpm en install/" && exit 1; \
+RUN microdnf install -y dnf && \
+    dnf -y install libaio bc net-tools procps openssl && \
+    if [ ! -f /install/oracle-database-xe-21c-1.0-1.ol8.x86_64.rpm ]; then \
+      echo "ERROR: coloca oracle-database-xe-21c-1.0-1.ol8.x86_64.rpm en install/" && exit 1; \
     fi && \
     echo "Instalando Oracle XE 21c RPM..." && \
-    yum -y localinstall /install/oracle-database-xe-21c-1.0-1.ol7.x86_64.rpm && \
+    dnf -y localinstall /install/oracle-database-xe-21c-1.0-1.ol8.x86_64.rpm && \
     rm -rf /install/* && \
-    yum clean all
+    dnf clean all
 
 # Crear directorios necesarios
 RUN mkdir -p /var/lock/subsys && \

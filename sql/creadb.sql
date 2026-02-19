@@ -1,12 +1,10 @@
 --  Version 2017
 
-Prompt ******  REGIONES  ....
 
 CREATE TABLE continentes
     ( IDcont  NUMBER(1) primary key,
       nombre    VARCHAR2(25)  );
 
-Prompt ******  PAISES ....
 
 CREATE TABLE paises 
    (IDpais      CHAR(2) NOT NULL,
@@ -20,7 +18,6 @@ ADD ( CONSTRAINT FKpais_continente FOREIGN KEY (IDcont)
           	  REFERENCES continentes(IDcont)  ) ;
 
 
-Prompt ******  OFICINAS ....
 
 CREATE TABLE oficinas
     (IDoficina  NUMBER(4) NOT NULL,
@@ -32,7 +29,6 @@ CREATE TABLE oficinas
      CONSTRAINT PKoficina PRIMARY KEY (IDoficina),
      CONSTRAINT FKoficina_pais FOREIGN KEY (IDpais) REFERENCES paises(IDpais)  ) ;
 
-Prompt ******  DEPARTMENTOS ....
 
 CREATE TABLE departamentos
     ( IDdep    NUMBER(4),
@@ -43,7 +39,6 @@ CREATE TABLE departamentos
      CONSTRAINT FKdep_Oficina FOREIGN KEY (IDoficina) REFERENCES oficinas (IDoficina)  ) ;
 
 
-Prompt ******  PUESTOS ....
 
 CREATE TABLE puestos
     ( IDpuesto VARCHAR2(4),
@@ -53,7 +48,6 @@ CREATE TABLE puestos
      CONSTRAINT PKpuestos PRIMARY KEY (IDpuesto) ) ;
 
 
-Prompt ******  EMPLEADOS ....
 
 CREATE TABLE empleados
     ( IDemp NUMBER(6),
@@ -78,7 +72,6 @@ CREATE TABLE empleados
 ALTER TABLE departamentos 
 ADD ( CONSTRAINT FKdep_director FOREIGN KEY (IDdirector) REFERENCES empleados(IDemp)  ) ;
 
-Prompt ******  MOVIMIENTOS ....
 
 CREATE TABLE movimientos
     (IDemp      NUMBER(6) NOT NULL,
