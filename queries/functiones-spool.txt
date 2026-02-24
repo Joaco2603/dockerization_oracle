@@ -1,0 +1,474 @@
+﻿
+SQL*Plus: Release 21.0.0.0.0 - Production on Mon Feb 23 21:44:19 2026
+Version 21.3.0.0.0
+
+Copyright (c) 1982, 2021, Oracle.  All rights reserved.
+
+Last Successful login time: Mon Feb 23 2026 21:22:59 +00:00
+
+Connected to:
+Oracle Database 21c Express Edition Release 21.0.0.0.0 - Production
+Version 21.3.0.0.0
+
+SQL> SET VERIFY OFF
+SQL> @/tmp/query_script.sql
+SQL> 
+SQL> 1)
+SP2-0042: unknown command "1)" - rest of line ignored.
+SQL> SELECT
+  2      IDOFICINA,
+  3      REPLACE(UPPER(SUBSTR(CODIGOPOSTAL, 1, 1)), 'A', '@') AS CODIGOPOSTAL,
+  4      REPLACE(UPPER(SUBSTR(CIUDAD, 1, 1)), 'A', '@') AS CIUDAD,
+  5      REPLACE(UPPER(SUBSTR(ESTADO, 1, 1)), 'A', '@') AS ESTADO,
+  6      REPLACE(UPPER(SUBSTR(PAIS, 1, 1)), 'A', '@') AS PAIS
+  7  FROM (
+  8      SELECT
+  9          IDOFICINA, DIRECCION,
+ 10          NVL2(CODPOSTAL, CODPOSTAL, CONCAT(UPPER(SUBSTR(DIRECCION, 1, 1)), LOWER(SUBSTR(DIRECCION, -1)))) AS CODIGOPOSTAL,
+ 11          NVL2(CIUDAD, CIUDAD, CONCAT(UPPER(SUBSTR(DIRECCION, 1, 1)), LOWER(SUBSTR(DIRECCION, -1)))) AS CIUDAD,
+ 12          NVL2(ESTADO, ESTADO, CONCAT(UPPER(SUBSTR(DIRECCION, 1, 1)), LOWER(SUBSTR(DIRECCION, -1)))) AS ESTADO,
+ 13          NVL2(IDPAIS, IDPAIS, CONCAT(UPPER(SUBSTR(DIRECCION, 1, 1)), LOWER(SUBSTR(DIRECCION, -1)))) AS PAIS
+ 14      FROM OFICINAS
+ 15  )
+ 16  ORDER BY LENGTH(CODIGOPOSTAL) DESC;
+
+ IDOFICINA CODI CIUD ESTA PAIS
+---------- ---- ---- ---- ----
+      1000 0    R    1    I
+      3500 7    H    H    H
+      1200 1    T    T    J
+      1300 6    H    9    J
+      1400 2    S    T    U
+      1500 9    S    C    U
+      1600 5    S    N    U
+      1700 9    S    W    U
+      1800 M    T    O    C
+      1900 Y    W    Y    C
+      2000 1    B    4    C
+      2100 4    B    M    I
+      2200 2    S    N    @
+      2300 5    S    1    S
+      2400 8    L    8    U
+      2500 O    O    O    U
+      2600 0    S    M    U
+      2700 8    M    B    D
+      2800 0    S    S    B
+      2900 1    G    G    C
+      3000 3    B    B    C
+      3100 3    U    U    N
+      3200 1    M    D    M
+      1650 1    M    N    U
+      1780 3    M    F    U
+      3300 1    S    S    C
+      3400 8    B    B    @
+      1100 1    V    9    I
+
+28 rows selected.
+
+SQL> 
+SQL> 2)
+SP2-0042: unknown command "2)" - rest of line ignored.
+SQL> 
+SQL> SELECT
+  2      UPPER(SUBSTR(NOMBRE,1,1)) as NOMBRE
+  3  FROM EMPLEADOS
+  4  WHERE (
+  5      NOMBRE LIKE '%a%'
+  6      OR NOMBRE LIKE '%e%'
+  7  )AND
+  8  AND SUBSTR(UPPER(NOMBRE), 1, 1) NOT IN ('A','E','I','O','U');
+AND SUBSTR(UPPER(NOMBRE), 1, 1) NOT IN ('A','E','I','O','U')
+*
+ERROR at line 8:
+ORA-00936: missing expression
+
+
+SQL> 
+SQL> 3)
+SP2-0042: unknown command "3)" - rest of line ignored.
+SQL> 
+SQL> SELECT INITCAP(CONCAT(CONCAT(NOMBRE,' '),APELLIDO)) as NCOMPLETO,
+  2  DECODE(MOD(LENGTH(NOMBRE),2), 0 ,'Divisible','No divisible') as DIV,
+  3  INITCAP(SUBSTR(NOMBRE,1,1)) as PLN,
+  4  INITCAP(SUBSTR(APELLIDO,1,1)) as PLA,
+  5  DECODE(IDJEFE, null, 'JEFAZO','NOJEFE') as TJEFE
+  6  FROM EMPLEADOS
+  7  WHERE UPPER(SUBSTR(NOMBRE, 2,4)) LIKE '%A%';
+
+NCOMPLETO                                      DIV          PLN  PLA  TJEFE
+---------------------------------------------- ------------ ---- ---- ------
+Julian Villanoa                                Divisible    J    V    NOJEFE
+Juliana Lubin                                  No divisible J    L    NOJEFE
+Lilian Cratos                                  Divisible    L    C    NOJEFE
+Isabel Dordigez                                Divisible    I    D    NOJEFE
+Talia Carilo                                   No divisible T    C    NOJEFE
+Armando Gomen                                  No divisible A    G    NOJEFE
+Roman Samis                                    No divisible R    S    NOJEFE
+Tomas Nolosa                                   No divisible T    N    NOJEFE
+Agatha Hachedoso                               Divisible    A    H    NOJEFE
+Joan Navorra                                   Divisible    J    N    NOJEFE
+Carol Asari                                    No divisible C    A    NOJEFE
+Ramon Canzarra                                 No divisible R    C    NOJEFE
+Samuel Reblos                                  Divisible    S    R    NOJEFE
+Linda Waston                                   No divisible L    W    NOJEFE
+Sandra Sanco                                   Divisible    S    S    NOJEFE
+Daniel Mazden                                  Divisible    D    M    NOJEFE
+Daniela Canales                                No divisible D    C    NOJEFE
+Dayana Novi                                    Divisible    D    N    NOJEFE
+Benjamin Parma                                 Divisible    B    P    NOJEFE
+Santiago Pirenne                               Divisible    S    P    NOJEFE
+Manuel Rodric                                  Divisible    M    R    NOJEFE
+Greta Alfar                                    No divisible G    A    NOJEFE
+Hari Seldon                                    Divisible    H    S    JEFAZO
+Daneel Olivaw                                  Divisible    D    O    NOJEFE
+Giskard Reventlov                              No divisible G    R    NOJEFE
+Arkady Darell                                  Divisible    A    D    NOJEFE
+Elijah Baley                                   Divisible    E    B    NOJEFE
+Bayta Darell                                   No divisible B    D    NOJEFE
+Gaal Dornick                                   Divisible    G    D    NOJEFE
+Gladia Solaria                                 Divisible    G    S    NOJEFE
+Golan Trevize                                  No divisible G    T    NOJEFE
+Raich Seldon                                   No divisible R    S    NOJEFE
+Salvor Hardin                                  Divisible    S    H    NOJEFE
+Susan Calvin                                   No divisible S    C    NOJEFE
+Janov Pelorat                                  No divisible J    P    NOJEFE
+Harla Branno                                   No divisible H    B    NOJEFE
+Lady Callia                                    Divisible    L    C    NOJEFE
+Toran Si Bayta                                 Divisible    T    B    NOJEFE
+Toran Darell                                   No divisible T    D    NOJEFE
+Lathan Devers                                  Divisible    L    D    NOJEFE
+Tamwil Elar                                    Divisible    T    E    NOJEFE
+Yate Fulham                                    Divisible    Y    F    NOJEFE
+Mandell Gruber                                 No divisible M    G    NOJEFE
+Primarul Indbur                                Divisible    P    I    NOJEFE
+Laskin Joranum                                 Divisible    L    J    NOJEFE
+Yohan Lee                                      No divisible Y    L    NOJEFE
+Jenarr Leggen                                  Divisible    J    L    NOJEFE
+Cinda Monay                                    No divisible C    M    NOJEFE
+Sura Novi                                      Divisible    S    N    NOJEFE
+Jorame Sutt                                    Divisible    J    S    NOJEFE
+Tomaz Sutt                                     No divisible T    S    NOJEFE
+Jaim Twer                                      Divisible    J    T    NOJEFE
+Han Fastolfe                                   No divisible H    F    NOJEFE
+Francis Clousarr                               No divisible F    C    NOJEFE
+Wanda Seldon                                   No divisible W    S    NOJEFE
+Lavinia Demacheck                              No divisible L    D    NOJEFE
+Jander Panell                                  Divisible    J    P    NOJEFE
+Fanya Fastolfe                                 No divisible F    F    NOJEFE
+Gladia Delmarre                                Divisible    G    D    NOJEFE
+Pandion Gladia                                 No divisible P    G    NOJEFE
+Vasilia Aliena                                 No divisible V    A    NOJEFE
+Santirix Gremionis                             Divisible    S    G    NOJEFE
+Maloon Cicis                                   Divisible    M    C    NOJEFE
+Jothan Leebig                                  Divisible    J    L    NOJEFE
+Rikaine Delmarre                               No divisible R    D    NOJEFE
+Jirad Tisalver                                 No divisible J    T    NOJEFE
+Hano Linder                                    Divisible    H    L    NOJEFE
+Richard Martin                                 No divisible R    M    NOJEFE
+Linda Rash                                     No divisible L    R    NOJEFE
+Pola Shekt                                     Divisible    P    S    NOJEFE
+Galatea Data                                   No divisible G    D    NOJEFE
+Isabella Rosetti                               Divisible    I    R    NOJEFE
+Ada Abedul                                     No divisible A    A    NOJEFE
+Ana Artafia                                    No divisible A    A    NOJEFE
+Eva Arana                                      No divisible E    A    NOJEFE
+Lia Bresne                                     No divisible L    B    NOJEFE
+Isabel Borjues                                 Divisible    I    B    NOJEFE
+Isabela Ballastaro                             No divisible I    B    NOJEFE
+Guadalupe Canacci                              No divisible G    C    NOJEFE
+Alan Cotta                                     Divisible    A    C    NOJEFE
+Alana Cerpetes                                 No divisible A    C    NOJEFE
+Amanda Torrens                                 Divisible    A    T    NOJEFE
+Diana Gurrietez                                No divisible D    G    NOJEFE
+Emanuel Zambudo                                No divisible E    Z    NOJEFE
+Francisco Fontine                              No divisible F    F    NOJEFE
+Juan Barquiaro                                 Divisible    J    B    NOJEFE
+Adan Setia                                     Divisible    A    S    NOJEFE
+Ivan Lupies                                    Divisible    I    L    NOJEFE
+Joaquin Monteblanco                            No divisible J    M    NOJEFE
+Clara Villanoa                                 No divisible C    V    NOJEFE
+Omar Lubin                                     Divisible    O    L    NOJEFE
+Claudia Dolgedo                                No divisible C    D    NOJEFE
+Amaya Cratos                                   No divisible A    C    NOJEFE
+Sebastian Dordigez                             No divisible S    D    NOJEFE
+Fabian Zorqui                                  Divisible    F    Z    NOJEFE
+Tobias Gomen                                   Divisible    T    G    NOJEFE
+Pablo Samis                                    No divisible P    S    NOJEFE
+Gabriel Nolosa                                 No divisible G    N    NOJEFE
+Gabriela Hachedoso                             Divisible    G    H    NOJEFE
+Lucas Navorra                                  No divisible L    N    NOJEFE
+Oscar Jertos                                   No divisible O    J    NOJEFE
+Ricardo Asari                                  No divisible R    A    NOJEFE
+Lucian Canales                                 Divisible    L    C    NOJEFE
+Lucia Reblos                                   No divisible L    R    NOJEFE
+Alejandra Portolican                           No divisible A    P    NOJEFE
+Alejandro Engales                              No divisible A    E    NOJEFE
+Elena Villabaja                                No divisible E    V    NOJEFE
+Alexandra Ayara                                No divisible A    A    NOJEFE
+Ariana Martin                                  Divisible    A    M    NOJEFE
+Raphael Alfar                                  No divisible R    A    NOJEFE
+Eliana Rash                                    Divisible    E    R    NOJEFE
+Elias Shekt                                    No divisible E    S    NOJEFE
+Leila Cantoro                                  No divisible L    C    NOJEFE
+Jaime Rosetti                                  No divisible J    R    NOJEFE
+Alina Abedul                                   No divisible A    A    NOJEFE
+Jairo Artafia                                  No divisible J    A    NOJEFE
+Elisa Arana                                    No divisible E    A    NOJEFE
+Lila Cotta                                     Divisible    L    C    NOJEFE
+Kira Cerpetes                                  Divisible    K    C    NOJEFE
+Orlando Torrens                                No divisible O    T    NOJEFE
+Valentina Barquiaro                            No divisible V    B    NOJEFE
+Valeria Setia                                  No divisible V    S    NOJEFE
+Julia Monteblanco                              No divisible J    M    NOJEFE
+
+123 rows selected.
+
+SQL> 
+SQL> 4)
+SP2-0042: unknown command "4)" - rest of line ignored.
+SQL> 
+SQL> SELECT
+  2      INITCAP(NOMBRE || ' ' || APELLIDO) AS EMPLEADO,
+  3      DIAINGRESO,
+  4      TRUNC(MONTHS_BETWEEN(SYSDATE, DIAINGRESO) / 12) AS ANIOS_ANTIGUEDAD,
+  5      CASE
+  6          WHEN MONTHS_BETWEEN(SYSDATE, DIAINGRESO) / 12 <= 5 THEN 'NOVATO'
+  7          WHEN MONTHS_BETWEEN(SYSDATE, DIAINGRESO) / 12 <= 10 THEN 'EXPERIMENTADO'
+  8          ELSE 'VETERANO'
+  9      END AS CATEGORIA,
+ 10      ADD_MONTHS(DIAINGRESO, 12) AS PROXIMO_ANIVERSARIO
+ 11  FROM EMPLEADOS;
+
+EMPLEADO                                       DIAINGRES ANIOS_ANTIGUEDAD CATEGORIA     PROXIMO_A
+---------------------------------------------- --------- ---------------- ------------- ---------
+Julian Villanoa                                27-MAR-10               15 VETERANO      27-MAR-11
+Juliana Lubin                                  22-DEC-01               24 VETERANO      22-DEC-02
+Julio Dolgedo                                  22-SEP-05               20 VETERANO      22-SEP-06
+Lilian Cratos                                  05-NOV-02               23 VETERANO      05-NOV-03
+Isabel Dordigez                                11-OCT-09               16 VETERANO      11-OCT-10
+Melina Baliren                                 13-SEP-09               16 VETERANO      13-SEP-10
+Talia Carilo                                   21-AUG-03               22 VETERANO      21-AUG-04
+William Zorqui                                 02-JUL-93               32 VETERANO      02-JUL-94
+Armando Gomen                                  05-DEC-98               27 VETERANO      05-DEC-99
+Roman Samis                                    06-DEC-94               31 VETERANO      06-DEC-95
+Tomas Nolosa                                   09-AUG-07               18 VETERANO      09-AUG-08
+Agatha Hachedoso                               06-MAR-09               16 VETERANO      06-MAR-10
+Joan Navorra                                   22-SEP-14               11 VETERANO      22-SEP-15
+Ximena Jertos                                  20-DEC-11               14 VETERANO      20-DEC-12
+Carol Asari                                    29-AUG-03               22 VETERANO      29-AUG-04
+Ramon Canzarra                                 22-OCT-93               32 VETERANO      22-OCT-94
+Simon Canales                                  07-JUL-11               14 VETERANO      07-JUL-12
+Samuel Reblos                                  01-OCT-96               29 VETERANO      01-OCT-97
+Linda Waston                                   11-MAR-03               22 VETERANO      11-MAR-04
+Sandra Sanco                                   01-DEC-04               21 VETERANO      01-DEC-05
+Ernesto Daquesa                                17-DEC-12               13 VETERANO      17-DEC-13
+Penelope Laugari                               30-JUL-12               13 VETERANO      30-JUL-13
+Daniel Mazden                                  10-JAN-02               24 VETERANO      10-JAN-03
+Daniela Canales                                08-FEB-12               14 VETERANO      08-FEB-13
+Dayana Novi                                    18-JUN-14               11 VETERANO      18-JUN-15
+Monica Palver                                  20-JUN-13               12 VETERANO      20-JUN-14
+Benjamin Parma                                 30-JAN-00               26 VETERANO      30-JAN-01
+Santiago Pirenne                               14-JUN-02               23 VETERANO      14-JUN-03
+Manuel Rodric                                  13-FEB-11               15 VETERANO      13-FEB-12
+Greta Alfar                                    28-AUG-10               15 VETERANO      28-AUG-11
+Hari Seldon                                    14-JUN-87               38 VETERANO      14-JUN-88
+Daneel Olivaw                                  10-DEC-95               30 VETERANO      10-DEC-96
+Giskard Reventlov                              05-MAR-97               28 VETERANO      05-MAR-98
+Arkady Darell                                  15-MAR-91               34 VETERANO      15-MAR-92
+Joseph Schwartz                                10-JAN-91               35 VETERANO      10-JAN-92
+Elijah Baley                                   19-NOV-00               25 VETERANO      19-NOV-01
+Hober Mallow                                   23-SEP-05               20 VETERANO      23-SEP-06
+Bayta Darell                                   30-NOV-99               26 VETERANO      30-NOV-00
+Eto Demerzel                                   04-JAN-15               11 VETERANO      04-JAN-16
+Gaal Dornick                                   27-AUG-07               18 VETERANO      27-AUG-08
+Bel Riose                                      18-MAY-03               22 VETERANO      18-MAY-04
+Gladia Solaria                                 05-MAR-02               23 VETERANO      05-MAR-03
+Golan Trevize                                  12-JUN-13               12 VETERANO      12-JUN-14
+Raich Seldon                                   23-FEB-08               18 VETERANO      23-FEB-09
+Cleon Primero                                  30-NOV-03               22 VETERANO      30-NOV-04
+Salvor Hardin                                  19-MAY-00               25 VETERANO      19-MAY-01
+Susan Calvin                                   28-NOV-05               20 VETERANO      28-NOV-06
+Dors Venabili                                  05-SEP-03               22 VETERANO      05-SEP-04
+Janov Pelorat                                  10-FEB-08               18 VETERANO      10-FEB-09
+Yugo Amaril                                    29-JUN-12               13 VETERANO      29-JUN-13
+Bor Alurin                                     23-AUG-09               16 VETERANO      23-AUG-10
+Pelleas Anthor                                 07-DEC-14               11 VETERANO      07-DEC-15
+Lors Avakim                                    10-AUG-01               24 VETERANO      10-AUG-02
+Ducem Barr                                     02-OCT-01               24 VETERANO      02-OCT-02
+Onum Barr                                      20-DEC-98               27 VETERANO      20-DEC-99
+Harla Branno                                   25-DEC-93               32 VETERANO      25-DEC-94
+Ammel Brodrig                                  20-OCT-10               15 VETERANO      20-OCT-11
+Lady Callia                                    14-JAN-10               16 VETERANO      14-JAN-11
+Linge Chen                                     14-JUL-01               24 VETERANO      14-JUL-02
+Mun Li Compor                                  28-MAR-98               27 VETERANO      28-MAR-99
+Lundin Crast                                   30-APR-09               16 VETERANO      30-APR-10
+Toran Si Bayta                                 19-MAR-02               23 VETERANO      19-MAR-03
+Toran Darell                                   01-APR-05               20 VETERANO      01-APR-06
+Lathan Devers                                  15-SEP-08               17 VETERANO      15-SEP-09
+Lord Dorwin                                    19-JUN-02               23 VETERANO      19-JUN-03
+Tamwil Elar                                    23-APR-99               26 VETERANO      23-APR-00
+Jord Fara                                      21-DEC-97               28 VETERANO      21-DEC-98
+Sennet Forell                                  06-JUN-00               25 VETERANO      06-JUN-01
+Yate Fulham                                    31-MAY-97               28 VETERANO      31-MAY-98
+Stor Gendival                                  28-JAN-03               23 VETERANO      28-JAN-04
+Mandell Gruber                                 25-JUL-95               30 VETERANO      25-JUL-96
+Primarul Indbur                                19-NOV-03               22 VETERANO      19-NOV-04
+Laskin Joranum                                 22-MAY-94               31 VETERANO      22-MAY-95
+Yohan Lee                                      16-OCT-97               28 VETERANO      16-OCT-98
+Jenarr Leggen                                  24-JAN-95               31 VETERANO      24-JAN-96
+Regele Lepold                                  09-OCT-96               29 VETERANO      09-OCT-97
+Publis Manlio                                  01-JUN-97               28 VETERANO      01-JUN-98
+Cinda Monay                                    07-JAN-98               28 VETERANO      07-JAN-99
+Homir Munn                                     18-DEC-87               38 VETERANO      18-DEC-88
+Sura Novi                                      07-FEB-00               26 VETERANO      07-FEB-01
+Stettin Palver                                 04-SEP-92               33 VETERANO      04-SEP-93
+Jord Parma                                     06-OCT-97               28 VETERANO      06-OCT-98
+Lewis Pirenne                                  07-APR-13               12 VETERANO      07-APR-14
+Anselm Haut Rodric                             29-JAN-15               11 VETERANO      29-JAN-16
+Elvett Semic                                   29-JUL-00               25 VETERANO      29-JUL-01
+Sef Sermak                                     04-SEP-94               31 VETERANO      04-SEP-95
+Quindor Shandess                               22-MAY-92               33 VETERANO      22-MAY-93
+Jorame Sutt                                    23-SEP-90               35 VETERANO      23-SEP-91
+Tomaz Sutt                                     22-MAY-12               13 VETERANO      22-MAY-13
+Jole Turbor                                    23-NOV-08               17 VETERANO      23-NOV-09
+Jaim Twer                                      02-AUG-13               12 VETERANO      02-AUG-14
+Poly Verisof                                   29-JAN-00               26 VETERANO      29-JAN-01
+Printul Regent Wienis                          25-MAY-99               26 VETERANO      25-MAY-00
+Vince Barrett                                  31-AUG-90               35 VETERANO      31-AUG-91
+Julius Enderby                                 15-MAR-93               32 VETERANO      15-MAR-94
+Jezebel Baley                                  23-JAN-00               26 VETERANO      23-JAN-01
+Roj Nemennuh Sarton                            03-MAR-03               22 VETERANO      03-MAR-04
+Bentley Baley                                  14-MAY-02               23 VETERANO      14-MAY-03
+Han Fastolfe                                   05-NOV-97               28 VETERANO      05-NOV-98
+Anthony Gerrigel                               14-NOV-11               14 VETERANO      14-NOV-12
+Francis Clousarr                               17-APR-09               16 VETERANO      17-APR-10
+Chetter Hummin                                 28-AUG-89               36 VETERANO      28-AUG-90
+Ebling Mis                                     12-JUN-07               18 VETERANO      12-JUN-08
+Wanda Seldon                                   20-AUG-90               35 VETERANO      20-AUG-91
+Cleon Segundo                                  01-NOV-92               33 VETERANO      01-NOV-93
+Wilson Roth                                    28-NOV-00               25 VETERANO      28-NOV-01
+Lavinia Demacheck                              25-SEP-91               34 VETERANO      25-SEP-92
+Albert Minnin                                  13-JAN-13               13 VETERANO      13-JAN-14
+Jander Panell                                  20-SEP-00               25 VETERANO      20-SEP-01
+Fanya Fastolfe                                 17-JUL-99               26 VETERANO      17-JUL-00
+Gladia Delmarre                                03-OCT-92               33 VETERANO      03-OCT-93
+Pandion Gladia                                 25-AUG-14               11 VETERANO      25-AUG-15
+Borgraf Gladia                                 07-JUL-11               14 VETERANO      07-JUL-12
+Vasilia Aliena                                 11-MAR-10               15 VETERANO      11-MAR-11
+Lumen Fastolfe                                 09-FEB-06               20 VETERANO      09-FEB-07
+Santirix Gremionis                             28-AUG-96               29 VETERANO      28-AUG-97
+Brundij Gremionis                              16-JAN-02               24 VETERANO      16-JAN-03
+Kelden Amadiro                                 02-FEB-08               18 VETERANO      02-FEB-09
+Maloon Cicis                                   09-MAR-15               10 VETERANO      09-MAR-16
+Rutilan Horder                                 29-NOV-95               30 VETERANO      29-NOV-96
+Altim Thool                                    24-NOV-15               10 VETERANO      24-NOV-16
+Corwin Attlebish                               11-MAY-03               22 VETERANO      11-MAY-04
+Anselmo Quemot                                 19-AUG-15               10 VETERANO      19-AUG-16
+Jothan Leebig                                  14-JUN-11               14 VETERANO      14-JUN-12
+Rikaine Delmarre                               24-MAY-91               34 VETERANO      24-MAY-92
+Rogen Benastra                                 23-APR-14               11 VETERANO      23-APR-15
+Endor Levanian                                 12-JUL-98               27 VETERANO      12-JUL-99
+Jirad Tisalver                                 04-MAY-07               18 VETERANO      04-MAY-08
+Hano Linder                                    09-JAN-97               29 VETERANO      09-JAN-98
+Emmer Thalus                                   08-JUN-89               36 VETERANO      08-JUN-90
+Richard Martin                                 15-AUG-99               26 VETERANO      15-AUG-00
+Andrew Data                                    06-APR-07               18 VETERANO      06-APR-08
+Linda Rash                                     28-JUL-97               28 VETERANO      28-JUL-98
+Affret Shekt                                   15-JAN-99               27 VETERANO      15-JAN-00
+Bel Avardan                                    31-AUG-15               10 VETERANO      31-AUG-16
+Pola Shekt                                     13-OCT-97               28 VETERANO      13-OCT-98
+Little Miss Martin                             07-DEC-90               35 VETERANO      07-DEC-91
+George Martin                                  18-DEC-89               36 VETERANO      18-DEC-90
+Galatea Data                                   06-SEP-10               15 VETERANO      06-SEP-11
+Klorissa Cantoro                               23-OCT-89               36 VETERANO      23-OCT-90
+Isabella Rosetti                               11-APR-92               33 VETERANO      11-APR-93
+Ada Abedul                                     30-MAY-93               32 VETERANO      30-MAY-94
+Ana Artafia                                    01-OCT-04               21 VETERANO      01-OCT-05
+Eva Arana                                      12-FEB-15               11 VETERANO      12-FEB-16
+Lia Bresne                                     05-DEC-99               26 VETERANO      05-DEC-00
+Isabel Borjues                                 16-JUN-08               17 VETERANO      16-JUN-09
+Isabela Ballastaro                             25-JUN-91               34 VETERANO      25-JUN-92
+Guadalupe Canacci                              09-APR-09               16 VETERANO      09-APR-10
+Alan Cotta                                     03-MAY-04               21 VETERANO      03-MAY-05
+Alana Cerpetes                                 09-JAN-15               11 VETERANO      09-JAN-16
+Amanda Torrens                                 29-JUN-13               12 VETERANO      29-JUN-14
+Diana Gurrietez                                05-MAY-96               29 VETERANO      05-MAY-97
+Emanuel Zambudo                                22-AUG-02               23 VETERANO      22-AUG-03
+Francisco Fontine                              06-MAR-10               15 VETERANO      06-MAR-11
+Juan Barquiaro                                 29-SEP-07               18 VETERANO      29-SEP-08
+Adan Setia                                     23-MAY-11               14 VETERANO      23-MAY-12
+Ivan Lupies                                    08-MAY-11               14 VETERANO      08-MAY-12
+Joaquin Monteblanco                            13-OCT-08               17 VETERANO      13-OCT-09
+Clara Villanoa                                 28-APR-13               12 VETERANO      28-APR-14
+Omar Lubin                                     18-JUN-02               23 VETERANO      18-JUN-03
+Claudia Dolgedo                                22-JUN-99               26 VETERANO      22-JUN-00
+Amaya Cratos                                   28-FEB-95               30 VETERANO      29-FEB-96
+Sebastian Dordigez                             12-MAY-13               12 VETERANO      12-MAY-14
+Roberto Baliren                                28-FEB-09               16 VETERANO      28-FEB-10
+Ruben Carilo                                   02-MAR-11               14 VETERANO      02-MAR-12
+Fabian Zorqui                                  09-JUL-14               11 VETERANO      09-JUL-15
+Tobias Gomen                                   31-MAR-15               10 VETERANO      31-MAR-16
+Pablo Samis                                    24-OCT-95               30 VETERANO      24-OCT-96
+Gabriel Nolosa                                 09-AUG-11               14 VETERANO      09-AUG-12
+Gabriela Hachedoso                             03-OCT-00               25 VETERANO      03-OCT-01
+Lucas Navorra                                  17-SEP-12               13 VETERANO      17-SEP-13
+Oscar Jertos                                   17-JUL-14               11 VETERANO      17-JUL-15
+Ricardo Asari                                  13-NOV-03               22 VETERANO      13-NOV-04
+Cecilia Canzarra                               20-JUL-97               28 VETERANO      20-JUL-98
+Lucian Canales                                 17-NOV-02               23 VETERANO      17-NOV-03
+Lucia Reblos                                   15-MAY-11               14 VETERANO      15-MAY-12
+Nicolas Waston                                 07-MAY-10               15 VETERANO      07-MAY-11
+Hector Sanco                                   02-DEC-98               27 VETERANO      02-DEC-99
+Victor Daquesa                                 11-MAR-03               22 VETERANO      11-MAR-04
+Victoria Laugari                               03-DEC-13               12 VETERANO      03-DEC-14
+Andrea Mazden                                  16-APR-15               10 VETERANO      16-APR-16
+Andres Arfola                                  06-APR-97               28 VETERANO      06-APR-98
+Pedro Jasor                                    30-APR-97               28 VETERANO      30-APR-98
+Rodrigo Contilla                               24-AUG-07               18 VETERANO      24-AUG-08
+Noe Maro                                       17-OCT-95               30 VETERANO      17-OCT-96
+Diego Chapaco                                  12-MAY-99               26 VETERANO      12-MAY-00
+Alejandra Portolican                           09-MAR-15               10 VETERANO      09-MAR-16
+Alejandro Engales                              17-MAY-95               30 VETERANO      17-MAY-96
+Abel Colva                                     02-OCT-00               25 VETERANO      02-OCT-01
+Amelia Lario                                   04-MAY-09               16 VETERANO      04-MAY-10
+Joel Derilo                                    14-MAR-15               10 VETERANO      14-MAR-16
+Brenda Vallelde                                26-OCT-94               31 VETERANO      26-OCT-95
+Elena Villabaja                                14-FEB-00               26 VETERANO      14-FEB-01
+Ezequiel Pirez                                 02-APR-15               10 VETERANO      02-APR-16
+Alexandra Ayara                                22-MAY-92               33 VETERANO      22-MAY-93
+Hugo Linder                                    17-FEB-02               24 VETERANO      17-FEB-03
+Miguel Thalus                                  23-MAY-89               36 VETERANO      23-MAY-90
+Ariana Martin                                  21-MAR-89               36 VETERANO      21-MAR-90
+Raphael Alfar                                  25-FEB-98               27 VETERANO      25-FEB-99
+Eliana Rash                                    08-FEB-14               12 VETERANO      08-FEB-15
+Elias Shekt                                    26-APR-05               20 VETERANO      26-APR-06
+Alicia Avardan                                 08-DEC-12               13 VETERANO      08-DEC-13
+Emilia Shekt                                   27-MAR-04               21 VETERANO      27-MAR-05
+Emiliano Martin                                28-DEC-14               11 VETERANO      28-DEC-15
+Emilio Martin                                  25-JAN-13               13 VETERANO      25-JAN-14
+Guillermo Alfar                                30-JUN-00               25 VETERANO      30-JUN-01
+Leila Cantoro                                  16-FEB-14               12 VETERANO      16-FEB-15
+Jaime Rosetti                                  12-APR-13               12 VETERANO      12-APR-14
+Alina Abedul                                   29-JAN-89               37 VETERANO      29-JAN-90
+Jairo Artafia                                  26-NOV-12               13 VETERANO      26-NOV-13
+Elisa Arana                                    16-APR-92               33 VETERANO      16-APR-93
+Iris Bresne                                    06-JUN-90               35 VETERANO      06-JUN-91
+Luis Borjues                                   02-MAY-99               26 VETERANO      02-MAY-00
+Oliver Ballastaro                              16-FEB-01               25 VETERANO      16-FEB-02
+Olivia Canacci                                 04-FEB-04               22 VETERANO      04-FEB-05
+Lila Cotta                                     05-FEB-04               22 VETERANO      05-FEB-05
+Kira Cerpetes                                  21-APR-00               25 VETERANO      21-APR-01
+Orlando Torrens                                16-AUG-09               16 VETERANO      16-AUG-10
+Noelia Gurrietez                               05-NOV-13               12 VETERANO      05-NOV-14
+Celeste Zambudo                                15-FEB-06               20 VETERANO      15-FEB-07
+Selena Fontine                                 08-MAR-06               19 VETERANO      08-MAR-07
+Valentina Barquiaro                            14-APR-11               14 VETERANO      14-APR-12
+Valeria Setia                                  19-SEP-13               12 VETERANO      19-SEP-14
+Felipe Lupies                                  21-JUN-99               26 VETERANO      21-JUN-00
+Julia Monteblanco                              02-JUL-08               17 VETERANO      02-JUL-09
+
+225 rows selected.
+
+SQL> EXIT;
+Disconnected from Oracle Database 21c Express Edition Release 21.0.0.0.0 - Production
+Version 21.3.0.0.0

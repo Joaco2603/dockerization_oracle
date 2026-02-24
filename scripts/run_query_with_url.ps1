@@ -31,10 +31,16 @@ if (Test-Path $EnvPath) {
 # 2. Validate variables
 $User = $env:CREDENTIAL_NAME
 $Pass = $env:CREDENTIAL_PASSWORD
+$InputFile = $env:INPUT_FILE
 $ResultName = $env:RESULT_NAME
 
 if ([string]::IsNullOrWhiteSpace($User) -or [string]::IsNullOrWhiteSpace($Pass)) {
     Write-Error "Credentials (CREDENTIAL_NAME, CREDENTIAL_PASSWORD) are missing in .env"
+    exit 1
+}
+
+if([string]::IsNullOrWhiteSpace($InputFile)) {
+    Write-Error "INPUT_FILE is missing in .env"
     exit 1
 }
 
@@ -79,37 +85,30 @@ SET ECHO ON
 SET VERIFY OFF
 "@
 
-# 4. Execute
-# We combine header + file content and pipe to docker exec
+# 4. Execute (run sqlplus inside Docker container)
+# Copy the input SQL into the container, create a wrapper that references it, copy wrapper, then exec sqlplus inside container.
 $Content = Get-Content $AbsInputPath -Raw
-# Transform content to ensure echo works better by repeating the query?
-# No, simpler approach: we print the query in the spool by enabling input echoing.
-# Note: With 'sqlplus -S' and piped input, 'SET ECHO ON' might not behave as expected for standard input.
-# A common trick is to copy the file to the container and run it with @file.
-# Let's switch to that approach to ensure reliable spooling with visible queries.
 
 $RemoteTempPath = "/tmp/query_script.sql"
 
-# Copy file to container
+# Copy the input SQL to the container
 docker cp $AbsInputPath "oracle-xe112:$RemoteTempPath"
-
-# Run sqlplus executing the file
-# We add header configuration dynamically by creating a wrapper script or just prepending config to the file.
-# Easier: Create a temporary local wrapper file.
 
 $WrapperFile = Join-Path $ScriptDir "temp_wrapper.sql"
 $WrapperContent = $SqlHeader + "`n@" + $RemoteTempPath + "`nEXIT;"
 
-# Write file without BOM (PowerShell 5.1 Set-Content adds BOM, causing SP2-0734)
+# Write file without BOM
 $Utf8NoBom = New-Object System.Text.UTF8Encoding $false
 [System.IO.File]::WriteAllText($WrapperFile, $WrapperContent, $Utf8NoBom)
 
+# Copy wrapper to container
 docker cp $WrapperFile "oracle-xe112:/tmp/wrapper.sql"
 
-# Execute
-# remove -S (Silent) so ECHO works
-# quote the @ argument to avoid PowerShell parsing issues.
-docker exec -i oracle-xe112 sqlplus "$User/$Pass" "@/tmp/wrapper.sql" | Set-Content $AbsOutputPath -Encoding UTF8
+# Connection URL requested by the user
+$sqlUrl = "joaco/1234@//localhost:1521/XEPDB1"
+
+# Execute sqlplus inside container and capture output
+docker exec -i oracle-xe112 sqlplus "$sqlUrl" "@/tmp/wrapper.sql" | Set-Content $AbsOutputPath -Encoding UTF8
 
 # Cleanup local wrapper
 Remove-Item $WrapperFile -Force
